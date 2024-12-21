@@ -1,0 +1,154 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+
+<!-- Titre -->
+<!-- mt-4=1rem, mb-9=2.25rem, px-4=1rem -->
+	<div class="container" style="margin-top:3rem; margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;"> <div
+		class="d-flex justify-content-between align-items-center">
+		<!-- text-3xl=1.875rem, font-semibold -->
+		<h2 class="fw-semibold text-black" style="font-size:1.875rem;">Liste des Paiements</h2>
+	</div>
+</div>
+
+
+<!-- Information -->
+
+<div class="container" style="margin-top:2rem; margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;">
+	<div
+		class="d-flex justify-content-between align-items-center">
+		<!-- text-3xl=1.2rem, font-semibold -->
+		<h2 class="fw-semibold text-primary" style="font-size:1.3rem;">Informations</h2>
+	</div>
+</div>
+
+<div class="container" style="margin-top:-1rem; margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;">
+	<div class="d-flex align-items-center justify-content-start flex-wrap" style="gap: 15rem;">
+		<div class="d-flex align-items-center">
+			<h2 class="fw-semibold text-black" style="font-size:1rem; margin: 0;">Nom et Prénoms :</h2>
+			<p class="fw-normal text-black" style="margin: 0; margin-left: 0.5rem;">
+				{% if dette.client.user %}
+					{{ dette.client.user.nom }}
+					{{ dette.client.user.prenom }}
+				{% else %}
+					Pas de Compte
+				{% endif %}
+			</p>
+		</div>
+		<div class="d-flex align-items-center">
+			<h2 class="fw-semibold text-black" style="font-size:1rem; margin: 0;">Montant Dette :</h2>
+			<p class="fw-normal text-black" style="margin: 0; margin-left: 0.5rem;">
+				{{ dette.montant }}
+			</p>
+		</div>
+	</div>
+</div>
+
+<div class="container" style="margin-top:-1rem; margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;">
+	<div class="d-flex align-items-center justify-content-start flex-wrap" style="gap: 20rem;">
+		<div class="d-flex align-items-center">
+			<h2 class="fw-semibold text-black" style="font-size:1rem; margin: 0;">Téléphone :</h2>
+			<p class="fw-normal text-black" style="margin: 0; margin-left: 0.5rem;">
+				{{dette.client.telephone}}
+			</p>
+		</div>
+		<div class="d-flex align-items-center">
+			<h2 class="fw-semibold text-black" style="font-size:1rem; margin: 0;">Montant D.Verser :</h2>
+			<p class="fw-normal text-black" style="margin: 0; margin-left: 0.5rem;">
+				{{dette.montantVerser}}
+			</p>
+		</div>
+	</div>
+</div>
+
+<div class="container" style="margin-top:-1rem; margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;">
+	<div class="d-flex align-items-center justify-content-start flex-wrap" style="gap: 20rem;">
+		<div class="d-flex align-items-center">
+			<h2 class="fw-semibold text-danger" style="font-size:1rem; margin: 0;">Montant Restant a payé :</h2>
+			<p class="fw-semibold text-danger" style="margin: 0; margin-left: 0.5rem;">
+				{{dette.getMontantRestant()}}
+			</p>
+		</div>
+	</div>
+</div>
+
+<!-- Message d'alerte -->
+<div class="container" style="margin-top:2rem; margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;">
+	<div class="d-flex justify-content-between align-items-center">
+		{% for message in app.flashes('error')%}
+			<div class="alert alert-danger">
+				{{message}}
+			</div>
+		{% endfor %}
+	</div>
+</div>
+
+{% if is_granted('ROLE_BOUTIQUIER') %}
+
+	<!-- Enregistrer un paiement sur place -->
+	<div class="container" style="margin-top:-2rem; margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem; margin-left:10rem;">
+		<div class="d-flex justify-content-between align-items-center">
+			{{ form_start(form, { 'attr': {'class': 'w-100'} }) }}
+
+			<!-- Ligne pour afficher les champs sur la même ligne -->
+			<div class="row">
+				<div class="col">
+					{{ form_row(form.montant,{'attr':{'disabled':disabled}})}}
+				</div>
+				<div class="col" style="margin-right:21rem;">
+					{{ form_row(form.save,{'attr':{'disabled':disabled}}) }}
+
+					{{ form_end(form) }}
+				</div>
+			</div>
+
+			{{ form_end(form) }}
+		</div>
+	</div>
+
+{% endif %}
+
+
+<!-- Tableau -->
+<!-- mb-9=2.25rem, px-4=1rem -->
+<div class="container" style="margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;">
+	<div class="bg-gray-100" style="overflow:hidden; border-radius:0.5rem;">
+		<table style="width:100%; table-layout:fixed;">
+			<thead class="bg-gray-100">
+				<tr>
+					<th style="padding:0.5rem 1rem; text-align:left;">Date</th>
+					<th style="padding:0.5rem 1rem; text-align:left;">Montant</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for paiement in paiements %}
+					<tr style="background-color:white;">
+						<td style="padding:0.5rem 1rem;">{{paiement.dateAt|date('d-m-Y')}}</td>
+						<td style="padding:0.5rem 1rem;">{{paiement.montant}}</td>
+					</tr>
+				{% else %}
+					
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<!-- Pagination -->
+<div class="container d-flex justify-content-center" style="margin-bottom:1rem; padding-left:1rem; padding-right:1rem;">
+	<div
+		class="d-flex" style="column-gap:0.5rem;">
+		<!-- Bouton Précédent -->
+		<button class="focus-outline-none" style="background-color:#f7fafc; color:#4b5563; border:none; border-radius:9999px; padding:0.25rem 0.75rem;" {% if page > 1 %} onclick="window.location.href='?page={{ page - 1 }}'" {% else %} disabled {% endif %}>
+			<span>&lt;</span>
+		</button>
+
+		<!-- Boutons de numéros de page -->
+		{% for i in 1..nbrePage %}
+			<button class="focus-outline-none {{ i == page ? 'active' : '' }}" style="background-color:#f7fafc; color:#1f2937; border:none; border-radius:9999px; padding:0.25rem 0.75rem;">
+				<a href="?page={{ i }}" class="text-black text-decoration-none">{{ i }}</a>
+			</button>
+		{% endfor %}
+
+		<!-- Bouton Suivant -->
+		<button class="focus-outline-none" style="background-color:#f7fafc; color:#4b5563; border:none; border-radius:9999px; padding:0.25rem 0.75rem;" {% if page < nbrePage %} onclick="window.location.href='?page={{ page + 1 }}'" {% else %} disabled {% endif %}> <span>&gt;</span> </button> </div> </div> {% endblock %}

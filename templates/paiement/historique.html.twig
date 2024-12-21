@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+
+	<!-- Titre -->
+	<!-- mt-4=1rem, mb-9=2.25rem, px-4=1rem -->
+		<div class="container" style="margin-top:3rem; margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;"> <div
+			class="d-flex justify-content-between align-items-center">
+			<!-- text-3xl=1.875rem, font-semibold -->
+			<h2 class="fw-semibold text-black" style="font-size:1.875rem;">Historique des paiements effectués</h2>
+		</div>
+	</div>
+
+    <!-- Filtrer par -->
+	<div class="container" style="margin-top:1rem; margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem; margin-left:10rem;">
+		<div class="d-flex justify-content-between align-items-center">
+			{{ form_start(searchPaiementForm, { 'attr': {'class': 'w-100'} }) }}
+
+			<!-- Ligne pour afficher les champs sur la même ligne -->
+			<div class="row">
+				<div class="col">
+					{{ form_row(searchPaiementForm.surname, {'label': false, 'attr': {'placeholder': 'Entrer le Surname du Client'}}) }}
+				</div>
+				<div class="col" style="margin-right:21rem;">
+					{{ form_row(searchPaiementForm.rechercher) }}
+
+				{{ form_end(searchPaiementForm) }}
+				</div>
+			</div>
+
+			{{ form_end(searchPaiementForm) }}
+		</div>
+	</div>
+
+
+
+
+	<!-- Tableau -->
+	<!-- mb-9=2.25rem, px-4=1rem -->
+	<div class="container" style="margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;">
+		<div class="bg-gray-100" style="overflow:hidden; border-radius:0.5rem;">
+			<table style="width:100%; table-layout:fixed;">
+				<thead class="bg-gray-100">
+					<tr>
+						<th style="padding:0.5rem 1rem; text-align:left;">Date</th>
+                        <th style="padding:0.5rem 1rem; text-align:left;">Nom & Prénoms</th>
+                        <th style="padding:0.5rem 1rem; text-align:left;">S.Client</th>
+                        <th style="padding:0.5rem 1rem; text-align:left;">Montant</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for paiement in paiements %}
+						<tr style="background-color:white;">
+							<td style="padding:0.5rem 1rem;">{{paiement.dateAt|date('d-m-Y')}}</td>
+                            <td style="padding:0.5rem 1rem;">
+                            {% if paiement.dette.client.user %}
+								{{paiement.dette.client.user.nom}}
+								{{paiement.dette.client.user.prenom}}
+							{% else %}
+								Pas de Compte
+							{% endif %}
+                            </td>
+                            <td style="padding:0.5rem 1rem;">{{paiement.dette.client.surname}}</td>
+                            <td style="padding:0.5rem 1rem;">{{paiement.montant}}</td>
+						</tr>
+					{% else %}
+						No paiement have been found.
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<!-- Pagination -->
+    <div class="container d-flex justify-content-center" style="margin-bottom:1rem; padding-left:1rem; padding-right:1rem;">
+    <div class="d-flex" style="column-gap:0.5rem;">
+        <!-- Bouton Précédent -->
+        <button class="focus-outline-none" style="background-color:#f7fafc; color:#4b5563; border:none; border-radius:9999px; padding:0.25rem 0.75rem;"
+                {% if page > 1 %}
+                onclick="window.location.href='?page={{ page - 1 }}'"
+                {% else %}
+                disabled
+                {% endif %}>
+            <span>&lt;</span>
+        </button>
+
+        <!-- Boutons de numéros de page -->
+        {% for i in 1..nbrePage %}
+            <button class="focus-outline-none {{ i == page ? 'active' : '' }}" style="background-color:#f7fafc; color:#1f2937; border:none; border-radius:9999px; padding:0.25rem 0.75rem;">
+                <a href="?page={{ i }}" class="text-black text-decoration-none">{{ i }}</a>
+            </button>
+        {% endfor %}
+
+        <!-- Bouton Suivant -->
+        <button class="focus-outline-none" style="background-color:#f7fafc; color:#4b5563; border:none; border-radius:9999px; padding:0.25rem 0.75rem;"
+                {% if page < nbrePage %}
+                onclick="window.location.href='?page={{ page + 1 }}'"
+                {% else %}
+                disabled
+                {% endif %}>
+            <span>&gt;</span>
+        </button>
+        </div>
+    </div>
+
+{% endblock %}

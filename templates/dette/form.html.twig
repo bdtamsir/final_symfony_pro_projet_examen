@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+
+	<!-- Titre -->
+	<div class="container text-center" style="margin-top:3rem; margin-bottom:2.25rem;">
+		<h2 class="fw-semibold text-black mb-5" style="font-size:1.875rem;">Nouvelle Dette</h2>
+		<h3 id="montantTotal" class="fw-semibold text-primary" style="font-size:1.5rem;">Montant Total : 0</h3>
+	</div>
+
+
+	<!-- Affichage des messages d'alerte -->
+	<div class="container d-flex justify-content-center align-items-center" style="margin-top:2rem; margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;">
+		<div class="d-flex justify-content-between align-items-center">
+			{% for type, messages in app.flashes %}
+				<div class="alert alert-{{ type }}">
+					{% for message in messages %}
+						{{ message }}
+					{% endfor %}
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+
+
+	<!-- Form -->
+	<div
+		class="container px-1 mb-4" style="max-width: 900px; margin: 0 auto;">
+		<!-- Formulaire -->
+		<div class="mb-5">
+			{{ form_start(formDette) }}
+
+			{{ form_row(formDette.dateAt) }}
+
+			{{ form_row(formDette.client) }}
+
+			<!-- Articles -->
+			{{ form_row(formDette.articles, {
+    'attr': {
+        'data-prix': formDette.articles.vars.choices|map(c => c.data.id ~ ':' ~ c.data.prix)|join(',')
+    }
+}) }}
+
+
+			<!-- Quantité -->
+			{{ form_row(formDette.Qte) }}
+
+			<!-- Montant Versé -->
+			{{ form_row(formDette.montantVerser) }}
+
+			{{ form_row(formDette.save) }}
+
+			{{ form_end(formDette) }}
+
+		</div>
+	</div>
+
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () { // Récupérer les champs nécessaires
+const articlesField = document.querySelector('#dette_articles');
+const qteField = document.querySelector('#dette_Qte');
+const montantTotalDisplay = document.querySelector('#montantTotal');
+const montantVerserField = document.querySelector('#dette_montantVerser');
+const saveButton = document.querySelector('button[type="submit"]');
+
+// Parse les données des prix depuis l'attribut data-prix
+const prixArticles = {};
+const dataPrix = articlesField.dataset.prix;
+dataPrix.split(',').forEach(pair => {
+const [id, prix] = pair.split(':');
+prixArticles[id] = parseFloat(prix);
+});
+
+// Fonction pour calculer le montant total
+function calculateMontantTotal() {
+const selectedOptions = Array.from(articlesField.selectedOptions);
+const qte = parseFloat(qteField.value) || 0;
+
+let total = 0;
+
+selectedOptions.forEach(option => {
+const articleId = option.value;
+if (prixArticles[articleId]) {
+total += prixArticles[articleId] * qte;
+}
+});
+
+montantTotalDisplay.textContent = `Montant Total : ${
+total.toFixed(2)
+}`;
+
+// Re-valider le montant versé après le recalcul du montant total
+validateMontantVerser();
+}
+
+// Fonction pour valider le montant versé
+function validateMontantVerser() {
+const montantVerser = parseFloat(montantVerserField.value) || 0;
+const total = parseFloat(montantTotalDisplay.textContent.replace('Montant Total : ', '').replace('€', '')) || 0;
+
+if (montantVerser > total) {
+saveButton.disabled = true;
+montantVerserField.classList.add('is-invalid');
+} else {
+saveButton.disabled = false;
+montantVerserField.classList.remove('is-invalid');
+}
+}
+
+// Écouter les changements sur les champs articles, quantité et montant versé
+articlesField.addEventListener('change', calculateMontantTotal);
+qteField.addEventListener('input', calculateMontantTotal);
+montantVerserField.addEventListener('input', validateMontantVerser);
+});
+	</script>
+
+
+{% endblock %}

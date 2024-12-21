@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+
+    <!-- Titre -->
+    <div class="container text-center" style="margin-top:3rem; margin-bottom:2.25rem;">
+        <h2 class="fw-semibold text-black mb-5" style="font-size:1.875rem;">
+            {% if client is defined %}
+                Création d'un compte utilisateur
+            {% else %}
+                Nouvel Utilisateur
+            {% endif %}
+        </h2>
+    </div>
+
+    <!-- Informations sur le client -->
+    {% if client is defined %}
+        <div class="container text-center" style="margin-bottom:2rem;">
+            <h4 class="text-primary">Client concerné :</h4>
+            <p><strong>Nom :</strong> {{ client.surname }}</p>
+            <p><strong>Téléphone :</strong> {{ client.telephone }}</p>
+            <p><strong>Adresse :</strong> {{ client.adresse }}</p>
+        </div>
+    {% endif %}
+
+    <!-- Formulaire -->
+    <div class="container px-1 mb-4" style="max-width: 900px; margin: 0 auto;">
+        <div class="mb-5">
+            {{ form_start(formUser) }}
+
+            {% if client is not defined %}
+                {{ form_row(formUser.surname) }}
+                {{ form_row(formUser.telephone) }}
+                {{ form_row(formUser.adresse) }}
+            {% endif %}
+
+            {{ form_row(formUser.nom) }}
+            {{ form_row(formUser.prenom) }}
+            {{ form_row(formUser.email) }}
+            {{ form_row(formUser.login) }}
+            {{ form_row(formUser.password) }}
+            {{ form_row(formUser.roles) }}
+            {{ form_row(formUser.save) }}
+
+            {{ form_end(formUser) }}
+        </div>
+    </div>
+
+{% endblock %}

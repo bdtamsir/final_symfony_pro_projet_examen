@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+
+<!-- Titre -->
+<!-- mt-4=1rem, mb-9=2.25rem, px-4=1rem -->
+	<div class="container" style="margin-top:3rem; margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;"> <div
+		class="d-flex justify-content-between align-items-center">
+		<!-- text-3xl=1.875rem, font-semibold -->
+		<h2 class="fw-semibold text-black" style="font-size:1.875rem;">Liste des Comptes</h2>
+		<button class="bg-white text-black border border-gray-400 rounded-lg" style="padding:0.5rem 1rem;">
+			<a href="{{ path ("user.create")}}" class="text-black text-decoration-none">Enregistrer</a>
+		</button>
+	</div>
+</div>
+
+
+<div class="container mb-4">
+    <form method="get" action="{{ path('user.index') }}">
+        <label for="role" class="form-label">Filtrer par :</label>
+        <select name="role" id="role" class="form-select w-auto" style="display: inline-block;" onchange="this.form.submit()">
+            <option value="">Tous les rôles</option>
+            <option value="ROLE_ADMIN" {{ currentRole == 'ROLE_ADMIN' ? 'selected' : '' }}>Administrateur</option>
+            <option value="ROLE_BOUTIQUIER" {{ currentRole == 'ROLE_BOUTIQUIER' ? 'selected' : '' }}>Boutiquier</option>
+            <option value="ROLE_CLIENT" {{ currentRole == 'ROLE_CLIENT' ? 'selected' : '' }}>Client</option>
+        </select>
+    </form>
+</div>
+
+
+
+<!-- lien pour voir client n'ayant pas un compte -->
+<div class="container" style="margin-top:3rem; margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;">
+	<div
+		class="d-flex justify-content-between align-items-center">
+		<!-- text-3xl=1.875rem, font-semibold -->
+		<a href="{{ path ("admin.clients_without_user")}}" class="fw-semibold" style="font-size:1.1rem; color:blue; text-decoration:none;">(Voir les clients sans compte utilisateur 👉)</a>
+	</div>
+</div>
+
+
+<!-- Tableau -->
+<!-- mb-9=2.25rem, px-4=1rem -->
+<div class="container" style="margin-bottom:2.25rem; padding-left:1rem; padding-right:1rem;">
+	<div class="bg-gray-100" style="overflow:hidden; border-radius:0.5rem;">
+		<table style="width:100%; table-layout:fixed;">
+			<thead class="bg-gray-100">
+				<tr>
+					<th style="padding:0.5rem 1rem; text-align:left;">Nom & Prénoms</th>
+					<th style="padding:0.5rem 1rem; text-align:left;">Email</th>
+					<th style="padding:0.5rem 1rem; text-align:left;">Login</th>
+					<th style="padding:0.5rem 1rem; text-align:left;">Rôle</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for user in users %}
+					<tr style="background-color:white;">
+						<td style="padding:0.5rem 1rem;">
+							{% if user.client.user %}
+								{{user.client.user.nom}}
+								{{user.client.user.prenom}}
+							{% else %}
+								Pas de Compte
+							{% endif %}
+						</td>
+						<td style="padding:0.5rem 1rem;">{{user.email}}</td>
+						<td style="padding:0.5rem 1rem;">{{user.login}}</td>
+						<td style="padding:0.5rem 1rem;">{{ user.roles|join(', ') }}</td>
+					</tr>
+				{% else %}
+					No users have been found.
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+<!-- Pagination -->
+<div class="container d-flex justify-content-center" style="margin-bottom:1rem; padding-left:1rem; padding-right:1rem;">
+	<div
+		class="d-flex" style="column-gap:0.5rem;">
+		<!-- Bouton Précédent -->
+		<button class="focus-outline-none" style="background-color:#f7fafc; color:#4b5563; border:none; border-radius:9999px; padding:0.25rem 0.75rem;" {% if page > 1 %} onclick="window.location.href='?page={{ page - 1 }}'" {% else %} disabled {% endif %}>
+			<span>&lt;</span>
+		</button>
+
+		<!-- Boutons de numéros de page -->
+		{% for i in 1..nbrePage %}
+			<button class="focus-outline-none {{ i == page ? 'active' : '' }}" style="background-color:#f7fafc; color:#1f2937; border:none; border-radius:9999px; padding:0.25rem 0.75rem;">
+				<a href="?page={{ i }}" class="text-black text-decoration-none">{{ i }}</a>
+			</button>
+		{% endfor %}
+
+		<!-- Bouton Suivant -->
+		<button class="focus-outline-none" style="background-color:#f7fafc; color:#4b5563; border:none; border-radius:9999px; padding:0.25rem 0.75rem;" {% if page < nbrePage %} onclick="window.location.href='?page={{ page + 1 }}'" {% else %} disabled {% endif %}> <span>&gt;</span> </button> </div> </div> {% endblock %}

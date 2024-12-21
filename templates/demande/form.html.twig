@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+
+	<!-- Titre -->
+	<div class="container text-center" style="margin-top:3rem; margin-bottom:2.25rem;">
+		<h2 class="fw-semibold text-black mb-5" style="font-size:1.875rem;">Nouvelle Demande de Dette</h2>
+		<h3 id="montantTotal" class="fw-semibold text-primary" style="font-size:1.5rem;">Montant Total : 0</h3>
+	</div>
+
+	<!-- Form -->
+	<div class="container px-1 mb-4" style="max-width: 900px; margin: 0 auto;">
+		<div class="mb-5">
+			{{ form_start(formDemande) }}
+			{% if app.user and 'ROLE_BOUTIQUIER' in app.user.roles %}
+				{{ form_row(formDemande.client) }}
+			{% endif %}
+			{{ form_row(formDemande.articles, {
+    'attr': {
+        'data-prix': formDemande.articles.vars.choices|map(c => c.data.id ~ ':' ~ c.data.prix)|join(',')
+    }
+}) }}
+
+			{{ form_row(formDemande.qte) }}
+			{{ form_row(formDemande.save) }}
+			{{ form_end(formDemande) }}
+
+		</div>
+	</div>
+
+
+
+	<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const articlesField = document.querySelector('#demande_dette_articles'); // Sélecteur pour le champ des articles
+        const qteField = document.querySelector('#demande_dette_qte'); // Sélecteur pour le champ de quantité
+        const montantTotalDisplay = document.querySelector('#montantTotal'); // Affichage du montant total
+
+        // Parse les données des prix depuis l'attribut data-prix
+        const prixArticles = {};
+        const dataPrix = articlesField.dataset.prix;
+        dataPrix.split(',').forEach(pair => {
+            const [id, prix] = pair.split(':');
+            prixArticles[id] = parseFloat(prix);
+        });
+
+        // Fonction pour calculer le montant total
+        function calculateMontantTotal() {
+            const selectedOption = articlesField.value; // ID de l'article sélectionné
+            const qte = parseFloat(qteField.value) || 0; // Quantité saisie
+
+            let total = 0;
+
+            if (prixArticles[selectedOption]) {
+                total = prixArticles[selectedOption] * qte; // Calculer le montant total
+            }
+
+            montantTotalDisplay.textContent = `Montant Total : ${total.toFixed(2)}`;
+        }
+
+        // Écouter les changements sur les champs articles et quantité
+        articlesField.addEventListener('change', calculateMontantTotal);
+        qteField.addEventListener('input', calculateMontantTotal);
+    });
+</script>
+
+
+{% endblock %}

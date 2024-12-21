@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+
+	<!-- Titre -->
+	<div class="container text-center" style="margin-top:3rem; margin-bottom:2.25rem;">
+		<h2 class="fw-semibold text-black mb-5" style="font-size:1.875rem;">Nouveau Client</h2>
+	</div>
+
+	<!-- Form -->
+	<div class="container px-1 mb-4" style="max-width: 900px; margin: 0 auto;">
+		<div class="mb-5">
+			{{ form_start(formClient) }}
+
+			<!-- Champs du formulaire Client -->
+			{{ form_row(formClient.surname) }}
+			{{ form_row(formClient.telephone) }}
+			{{ form_row(formClient.adresse) }}
+
+			<!-- Checkbox "Créer un compte" -->
+			{{ form_row(formClient.createUser) }}
+
+			<!-- Champs du formulaire User -->
+			<div id="user-fields" style="display: none;">
+				{{ form_widget(formClient.user) }}
+			</div>
+
+			<!-- Bouton de soumission -->
+			{{ form_row(formClient.save) }}
+
+			{{ form_end(formClient) }}
+		</div>
+	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+const createUserCheckbox = document.querySelector('input[name="client[createUser]"]');
+const userFields = document.getElementById('user-fields');
+
+if (createUserCheckbox && userFields) { // Initialiser l'affichage
+userFields.style.display = createUserCheckbox.checked ? 'block' : 'none';
+
+// Ajoute un événement au clic sur la checkbox
+createUserCheckbox.addEventListener('change', () => {
+userFields.style.display = createUserCheckbox.checked ? 'block' : 'none';
+});
+} else {
+console.error("Checkbox ou champs utilisateur introuvables !");
+}
+});
+	</script>
+
+{% endblock %}

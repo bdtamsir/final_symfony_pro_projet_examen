@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block main %}
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh; margin-top: -10vh;">
+    <div class="login-container" style="width: 100%; max-width: 400px; padding: 2rem; background-color: #f8f9fa; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <h3 class="text-center fw-bold mb-4" style="font-size: 1.5rem;">Veuillez vous connecter 👨🏽‍💻</h3>
+
+        <!-- Affichage des erreurs -->
+        {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        <!-- Formulaire de connexion -->
+        <form method="post">
+            <div class="form-group mb-3">
+                <input type="text" value="{{ last_username }}" name="login" id="inputLogin" class="form-control" placeholder="Login" autocomplete="username" required autofocus>
+            </div>
+            <div class="form-group mb-4">
+                <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Mot de passe" autocomplete="current-password" required>
+            </div>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <button class="btn btn-dark btn-block w-100" type="submit">Se connecter</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

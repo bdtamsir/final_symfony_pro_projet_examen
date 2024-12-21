@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+
+	<!-- Titre -->
+	<div class="container text-center" style="margin-top:3rem; margin-bottom:2.25rem;">
+		<h2 class="fw-semibold text-black mb-4" style="font-size:1.875rem;">Mis à jour de la quantité en Stock</h2>
+		<p class="fw-semibold text-primary" style="font-size:1.5rem;">Article :
+			{{ article.libelle }}</p>
+	</div>
+
+
+	<!-- Form -->
+	<div
+		class="container px-1 mb-4" style="max-width: 900px; margin: 0 auto;">
+		<!-- Formulaire -->
+		<div class="mb-5">
+			{{ form_start(form) }}
+
+			{{ form_row(form.qteStock) }}
+
+			{{ form_row(form.save) }}
+
+			{{ form_end(form) }}
+
+		</div>
+	</div>
+
+
+{% endblock %}
